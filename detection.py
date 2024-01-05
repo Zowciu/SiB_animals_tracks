@@ -1,18 +1,18 @@
-import argparse
-
-import cv2.dnn
+import cv2
 import numpy as np
-
+import sys
+import json
+from pathlib import Path
 
 CLASSES = ['beaver', 'boar', 'deer', 'hare', 'lynx', 'wolf']
 colors = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
 
 def draw_bounding_box(img, class_id, confidence, x, y, x_plus_w, y_plus_h):
-    label = f'{CLASSES[class_id]} ({confidence:.2f})'
+    label = f'{CLASSES[class_id]}'
     color = colors[class_id]
     cv2.rectangle(img, (x, y), (x_plus_w, y_plus_h), color, 5)
-    cv2.putText(img, label, (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.25, color, 3)
+    cv2.putText(img, label, (x + 30, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.25, color, 3)
 
 
 def main(onnx_model, input_image):
@@ -77,18 +77,21 @@ def main(onnx_model, input_image):
         draw_bounding_box(original_image, class_ids[index], scores[index], round(box[0] * scale), round(box[1] * scale),
                           round((box[0] + box[2]) * scale), round((box[1] + box[3]) * scale))
 
+    
+    original_image = cv2.resize(original_image, (480, 480))
+
     # Display the image with bounding boxes
-    original_image = cv2.resize(original_image, (640, 640))
-    cv2.imshow('image', original_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow('image', original_image)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
-    return detections
+    file_extension = Path(input_image).suffix
 
+    # Save the image with bounding boxes to a temporary file
+    output_image_path = "detected_img" + file_extension
+    cv2.imwrite(output_image_path, original_image)
+
+    print(output_image_path)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--model', default='best.onnx', help='Input your ONNX model.')
-    parser.add_argument('--img', default=str( 'rotated_wolf1.jpeg'), help='Path to input image.')
-    args = parser.parse_args()
-    main(args.model, args.img)
+    main('best.onnx', sys.argv[1])
