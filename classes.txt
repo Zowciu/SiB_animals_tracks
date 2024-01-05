@@ -1,0 +1,6 @@
+beaver
+boar
+deer 
+hare
+lynx
+wolf
