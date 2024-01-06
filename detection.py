@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import sys
-import json
 from pathlib import Path
 
 CLASSES = ['beaver', 'boar', 'deer', 'hare', 'lynx', 'wolf']
@@ -15,7 +14,7 @@ def draw_bounding_box(img, class_id, confidence, x, y, x_plus_w, y_plus_h):
     cv2.putText(img, label, (x + 30, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.25, color, 3)
 
 
-def main(onnx_model, input_image):
+def return_image(onnx_model, input_image):
     # Load the ONNX model
     model: cv2.dnn.Net = cv2.dnn.readNetFromONNX(onnx_model)
 
@@ -91,7 +90,7 @@ def main(onnx_model, input_image):
     output_image_path = "detected_img" + file_extension
     cv2.imwrite(output_image_path, original_image)
 
-    print(output_image_path)
+    return output_image_path
 
 if __name__ == '__main__':
-    main('best.onnx', sys.argv[1])
+    return_image('best.onnx', sys.argv[1])
