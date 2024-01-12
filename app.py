@@ -52,7 +52,8 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("Animals by tracks", "Animals by tracks"))
+        MainWindow.setWindowTitle(_translate("Animal tracks", "Animal tracks"))
+        MainWindow.setWindowIcon(QtGui.QIcon('app_icon.png'))
         self.get_button.setText(_translate("MainWindow", "Browse for image"))
         self.detect_button.setText(_translate("MainWindow", "Detect"))
         self.model_button.setText(_translate("MainWindow", "Load model"))
