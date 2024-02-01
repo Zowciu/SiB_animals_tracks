@@ -3,9 +3,6 @@ import numpy as np
 import sys
 from pathlib import Path
 
-CLASSES = ['beaver', 'boar', 'deer', 'hare', 'lynx', 'wolf']
-colors = np.random.uniform(0, 255, size=(len(CLASSES), 3))
-
 
 def get_classes():
     classes = []
@@ -16,8 +13,8 @@ def get_classes():
     return classes
 
 
-def draw_bounding_box(img, class_id, confidence, x, y, x_plus_w, y_plus_h):
-    label = f'{CLASSES[class_id]}'
+def draw_bounding_box(img, class_id, classes, colors, confidence, x, y, x_plus_w, y_plus_h):
+    label = f'{classes[class_id]}'
     color = colors[class_id]
     cv2.rectangle(img, (x, y), (x_plus_w, y_plus_h), color, 5)
     cv2.putText(img, label, (x + 30, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.25, color, 3)
@@ -28,7 +25,8 @@ def return_image(onnx_model, input_image):
     model: cv2.dnn.Net = cv2.dnn.readNetFromONNX(onnx_model)
 
     # Load names of classes (there should be txt file with every class in each line)
-    CLASSES = get_classes()
+    classes = get_classes()
+    colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
     # Read the input image
     original_image: np.ndarray = cv2.imread(input_image)
@@ -80,12 +78,12 @@ def return_image(onnx_model, input_image):
         box = boxes[index]
         detection = {
             'class_id': class_ids[index],
-            'class_name': CLASSES[class_ids[index]],
+            'class_name': classes[class_ids[index]],
             'confidence': scores[index],
             'box': box,
             'scale': scale}
         detections.append(detection)
-        draw_bounding_box(original_image, class_ids[index], scores[index], round(box[0] * scale), round(box[1] * scale),
+        draw_bounding_box(original_image, class_ids[index], classes, colors, scores[index], round(box[0] * scale), round(box[1] * scale),
                           round((box[0] + box[2]) * scale), round((box[1] + box[3]) * scale))
 
     
