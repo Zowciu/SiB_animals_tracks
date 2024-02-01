@@ -7,6 +7,15 @@ CLASSES = ['beaver', 'boar', 'deer', 'hare', 'lynx', 'wolf']
 colors = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
 
+def get_classes():
+    classes = []
+    with open("classes.txt", 'r') as f:
+        lines = f.readlines()
+        for line in lines:
+            classes.append(line.rstrip())
+    return classes
+
+
 def draw_bounding_box(img, class_id, confidence, x, y, x_plus_w, y_plus_h):
     label = f'{CLASSES[class_id]}'
     color = colors[class_id]
@@ -17,6 +26,9 @@ def draw_bounding_box(img, class_id, confidence, x, y, x_plus_w, y_plus_h):
 def return_image(onnx_model, input_image):
     # Load the ONNX model
     model: cv2.dnn.Net = cv2.dnn.readNetFromONNX(onnx_model)
+
+    # Load names of classes (there should be txt file with every class in each line)
+    CLASSES = get_classes()
 
     # Read the input image
     original_image: np.ndarray = cv2.imread(input_image)
